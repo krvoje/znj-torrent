@@ -1,7 +1,6 @@
-package krvoje.znjtorrent
+package krvoje.znjtorrent.metainfo
 
-import java.util.Date
-
+import krvoje.znjtorrent.bencoding._
 import org.joda.time.{DateTime, DateTimeZone}
 
 case class Metainfo(

@@ -1,4 +1,4 @@
-package krvoje.znjtorrent
+package krvoje.znjtorrent.bencoding
 
 import org.specs2._
 

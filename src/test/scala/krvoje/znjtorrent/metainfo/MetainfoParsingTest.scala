@@ -1,9 +1,9 @@
-package krvoje.znjtorrent
+package krvoje.znjtorrent.metainfo
 
 import org.joda.time.{DateTime, DateTimeZone}
+import org.specs2._
 
 import scala.io.Source
-import org.specs2._
 
 class MetainfoParsingTest extends mutable.Specification {
 

@@ -2,6 +2,8 @@ package krvoje.znjtorrent
 
 import java.net.URLEncoder
 
+import krvoje.znjtorrent.bencoding._
+
 sealed trait TrackerEvent {
   val value: String
 }
