@@ -1,5 +1,7 @@
 package krvoje.znjtorrent.peerwire
 
+import krvoje.znjtorrent.peerwire.message._
+import krvoje.znjtorrent.peerwire.value.{Index, PeerID, PortValue, SHA1}
 import org.specs2._
 
 class PeerwireMessageTest extends mutable.Specification {
@@ -21,8 +23,8 @@ class PeerwireMessageTest extends mutable.Specification {
 
   private def rt(msg: PeerwireMessage) = {
     s"$msg" >> {
-      "Serialize -> Deserialize" >> { Peerwire.deserialize(msg.ser) ==== padBools(msg) }
-      "Ser - > Deser -> Ser" >> {Peerwire.deserialize(msg.ser).ser ==== msg.ser}
+      "Serialize -> Deserialize" >> { PeerwireMessage.deserialize(msg.ser) ==== padBools(msg) }
+      "Ser - > Deser -> Ser" >> {PeerwireMessage.deserialize(msg.ser).ser ==== msg.ser}
     }
   }
 

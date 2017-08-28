@@ -1,5 +1,6 @@
 package krvoje.znjtorrent.peerwire
 
+import krvoje.znjtorrent.peerwire.message.Bitfield
 import org.specs2._
 import org.specs2.specification.core.Fragment
 
