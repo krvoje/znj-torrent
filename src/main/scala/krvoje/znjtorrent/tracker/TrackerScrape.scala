@@ -1,4 +1,4 @@
-package krvoje.znjtorrent
+package krvoje.znjtorrent.tracker
 
 // TODO: Implement
 
