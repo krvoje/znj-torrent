@@ -1,3 +1,5 @@
 package krvoje.znjtorrent.tracker
 
-case class TrackerPeer(peerID: String, ip: String, port: Int)
+import java.net.InetSocketAddress
+
+case class TrackerPeer(peerID: String, address: InetSocketAddress)

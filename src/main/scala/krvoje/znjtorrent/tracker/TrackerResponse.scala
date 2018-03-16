@@ -1,5 +1,7 @@
 package krvoje.znjtorrent.tracker
 
+import java.net.InetSocketAddress
+
 import krvoje.znjtorrent.bencoding._
 
 case class TrackerResponse(
@@ -30,15 +32,30 @@ object TrackerResponse {
     )
   }
 
-  private def peers(d: BE): Seq[TrackerPeer] = {
+  private def peers(d: BE): Seq[TrackerPeer] = { // TODO: Test
     d match {
       case BEList(values @ _*) => values.map(_.asInstanceOf[BEDictionary]).map( d =>
         TrackerPeer(
           peerID = d.string("peer id"),
-          ip = d.string("ip"),
-          port = d.int("port")
+          address = new InetSocketAddress(d.string("ip"), d.int("port"))
         ))
-      case BEString(value) => ???
+      case BEString(value) => {
+        value.getBytes().grouped(6).flatMap {
+          chunk =>
+            if(chunk.size == 6) Some {
+              val host = Seq(
+                chunk(0).asInstanceOf[Int].toString,
+                chunk(1).asInstanceOf[Int].toString,
+                chunk(2).asInstanceOf[Int].toString,
+                chunk(3).asInstanceOf[Int].toString).mkString(".")
+              val port: Int = BigInt(chunk.slice(4,6)).intValue()
+              TrackerPeer(
+                peerID = s"Peer-$host",
+                address = new InetSocketAddress(host, port)
+              )
+            } else None
+        }
+      }.toSeq
       case _ => throw new InvalidParam("Dictionary or string expected")
     }
   }

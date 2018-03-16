@@ -21,8 +21,6 @@ object BE {
   val ValueEnd = 'e'
 }
 
-
-// TODO: Disallow non-ASCII strings
 case class BEString(value: String) extends BEValue[String] {
   val encoded = s"${value.length}${BE.StringDelimiter}${value}"
 }
@@ -77,7 +75,7 @@ case class BEDecoder(content: String) {
       value.append(current)
       next
     }
-    // TODO: Validate these are all ASCII nums
+    require(value.toString().matches("[+-]?[0-9]*"), s"ASCII values expected, instead got: '${value.toString()}'")
     if(value.head == '0' && value.size != 1) throw new InvalidBEInt(value.toString())
     assert(current == BE.ValueEnd)
     BEInt(value.toString().toInt)

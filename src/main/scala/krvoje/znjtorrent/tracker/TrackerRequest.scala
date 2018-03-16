@@ -32,10 +32,7 @@ case class TrackerRequest(
     ("key" -> key),
     ("trackerid" -> trackerID))
 
-  def uriString: String = requestParams.map(_._1).mkString("&") // TODO: Escape
-
-  def encode(str: String): String = URLEncoder.encode(str, "utf-8")
-
+  def uriString: String = URLEncoder.encode(requestParams.map(_._1).mkString("&"), "utf-8")
 }
 
 
