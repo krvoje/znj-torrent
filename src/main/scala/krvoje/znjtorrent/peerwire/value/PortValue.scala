@@ -1,11 +1,12 @@
 package krvoje.znjtorrent.peerwire.value
 
-import krvoje.znjtorrent.peerwire.message.PeerwireMessage
+import krvoje.znjtorrent.peerwire._
+
 
 case class PortValue(val value: Int) extends PeerwireValue[Int] {
 
   override val ser: Array[Byte] = {
-    val arr = PeerwireMessage.beba(value)
+    val arr = value.bigEndianByteArray
     val pad = (2 - arr.length) max 0
     Array.concat(Seq.fill[Byte](pad)(0).toArray, arr)
   }

@@ -26,7 +26,7 @@ case class Bitfield(payload: Array[Boolean]) extends PeerwireMessage {
   }
 
   override val len: Int = (1 + value.length)
-  override val ser: Array[Byte] = Array.concat(
+  override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Bitfield.ID),
     value)
@@ -47,7 +47,7 @@ object Bitfield extends Deser[Bitfield] {
 
   def apply(bs: Boolean*): Bitfield = Bitfield(bs.toArray)
 
-  override def deser(bs: Array[Byte]): Bitfield = {
+  override def deserialize(bs: Array[Byte]): Bitfield = {
     val valueLen = BigInt(bs.slice(0,4))-1
     Bitfield(toBools(bs.slice(5, 5 + valueLen.intValue())))
   }

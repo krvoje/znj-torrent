@@ -4,7 +4,7 @@ import krvoje.znjtorrent.peerwire.value.Index
 
 case class Piece(index: Index, begin: Index, block: Array[Byte]) extends PeerwireMessage {
   override val len: Int = 9 + block.length
-  override val ser: Array[Byte] =  Array.concat(
+  override val serialized: Array[Byte] =  Array.concat(
     LEN,
     Array(Piece.ID),
     index.ser,
@@ -24,7 +24,7 @@ case class Piece(index: Index, begin: Index, block: Array[Byte]) extends Peerwir
 
 object Piece extends Deser[Piece] {
   override val ID: Byte = 7
-  override def deser(bs: Array[Byte]) = {
+  override def deserialize(bs: Array[Byte]) = {
     val blockLength = BigInt(bs.slice(0, 4)).intValue() - 9
     Piece(
       index = Index(bs.slice(5, 9)),

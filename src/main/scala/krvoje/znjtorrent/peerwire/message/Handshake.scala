@@ -12,7 +12,7 @@ case class Handshake(
 
   override val len: Int = PeerwireMessage.PSTR.length.toByte
 
-  val ser: Array[Byte] = Array.concat(
+  val serialized: Array[Byte] = Array.concat(
     Array[Byte](PeerwireMessage.PSTR.length.toByte),
     PeerwireMessage.PSTR,
     PeerwireMessage.RESERVED,
@@ -23,7 +23,7 @@ case class Handshake(
 
 object Handshake extends Deser[Handshake]{
   val ID = -1 // Ignore
-  def deser(bytes: Array[Byte]): Handshake = {
+  def deserialize(bytes: Array[Byte]): Handshake = {
     //TODO: require(bytes.length == ser.length, "Invalid Handshake length")
     Handshake(
       infoHash = SHA1(new String(bytes.slice(28, 48), "utf-8")),

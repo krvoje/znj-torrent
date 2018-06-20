@@ -8,7 +8,7 @@ case class Request(index: Index, begin: Index, end: Index) extends PeerwireMessa
   require(begin <= end, s"Invalid params: $this")
 
   override val len: Int = 13
-  override val ser: Array[Byte] = Array.concat(
+  override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Request.ID),
     index.ser,
@@ -18,7 +18,7 @@ case class Request(index: Index, begin: Index, end: Index) extends PeerwireMessa
 
 object Request extends Deser[Request] {
   override val ID: Byte = 6
-  override def deser(bs: Array[Byte]) = {
+  override def deserialize(bs: Array[Byte]) = {
     Request(
       index = Index(bs.slice(5, 9)),
       begin = Index(bs.slice(9, 13)),

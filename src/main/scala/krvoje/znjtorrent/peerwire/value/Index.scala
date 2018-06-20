@@ -1,6 +1,6 @@
 package krvoje.znjtorrent.peerwire.value
 
-import krvoje.znjtorrent.peerwire.message.PeerwireMessage
+import krvoje.znjtorrent.peerwire._
 
 case class Index(val value: Int) extends PeerwireValue[Int] {
 
@@ -8,7 +8,7 @@ case class Index(val value: Int) extends PeerwireValue[Int] {
   def >= (other: Index): Boolean = value >= other.value
 
   val ser: Array[Byte] = {
-    val res = PeerwireMessage.beba(value)
+    val res = value.bigEndianByteArray
     val pad = (4 - res.length) max 0
     Array.concat(Array.fill[Byte](pad)(0), res)
   }

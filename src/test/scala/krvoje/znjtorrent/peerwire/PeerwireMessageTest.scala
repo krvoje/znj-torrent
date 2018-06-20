@@ -23,8 +23,8 @@ class PeerwireMessageTest extends mutable.Specification {
 
   private def rt(msg: PeerwireMessage) = {
     s"$msg" >> {
-      "Serialize -> Deserialize" >> { PeerwireMessage.deserialize(msg.ser) ==== padBools(msg) }
-      "Ser - > Deser -> Ser" >> {PeerwireMessage.deserialize(msg.ser).ser ==== msg.ser}
+      "Serialize -> Deserialize" >> { PeerwireMessage.deserialize(msg.serialized) ==== padBools(msg) }
+      "Ser - > Deser -> Ser" >> {PeerwireMessage.deserialize(msg.serialized).serialized ==== msg.serialized}
     }
   }
 
