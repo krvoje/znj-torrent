@@ -7,7 +7,7 @@ case class Have(index: Index) extends PeerwireMessage {
   override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Have.ID),
-    index.ser)
+    index.serialized)
 }
 
 object Have extends Deser[Have] {

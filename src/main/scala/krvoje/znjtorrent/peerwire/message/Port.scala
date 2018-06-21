@@ -7,7 +7,7 @@ case class Port(port: PortValue) extends PeerwireMessage {
   override val serialized: Array[Byte] =  Array.concat(
     LEN,
     Array(Port.ID),
-    port.ser)
+    port.serialized)
 }
 
 object Port extends Deser[Port] {

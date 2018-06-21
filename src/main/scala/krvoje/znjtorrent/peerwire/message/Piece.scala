@@ -7,8 +7,8 @@ case class Piece(index: Index, begin: Index, block: Array[Byte]) extends Peerwir
   override val serialized: Array[Byte] =  Array.concat(
     LEN,
     Array(Piece.ID),
-    index.ser,
-    begin.ser,
+    index.serialized,
+    begin.serialized,
     block)
 
   override def equals(that: Any): Boolean = {

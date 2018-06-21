@@ -11,9 +11,9 @@ case class Request(index: Index, begin: Index, end: Index) extends PeerwireMessa
   override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Request.ID),
-    index.ser,
-    begin.ser,
-    end.ser)
+    index.serialized,
+    begin.serialized,
+    end.serialized)
 }
 
 object Request extends Deser[Request] {

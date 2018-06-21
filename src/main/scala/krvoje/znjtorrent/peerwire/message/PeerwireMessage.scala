@@ -1,9 +1,9 @@
 package krvoje.znjtorrent.peerwire.message
 
-import krvoje.znjtorrent.peerwire._
+import krvoje.znjtorrent.PimpedInt
 
 object PeerwireMessage {
-  val PSTR: Array[Byte] = "BitTorrent protocol".getBytes("UTF-8")
+  val PSTR = "BitTorrent protocol"
   val RESERVED = Array[Byte](0,0,0,0,0,0,0,0)
 
   def deserialize(bs: Array[Byte]): PeerwireMessage = {

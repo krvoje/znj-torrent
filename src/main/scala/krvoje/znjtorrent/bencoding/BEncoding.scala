@@ -60,14 +60,14 @@ case class BEDecoder(content: String) {
 
   def decode: BE = {
     current match {
-      case BE.IntegerStart => int
-      case BE.ListStart => list
-      case BE.DictionaryStart => dictionary
-      case _ => string
+      case BE.IntegerStart => decodeInt
+      case BE.ListStart => decodeList
+      case BE.DictionaryStart => decodeDictionary
+      case _ => decodeString
     }
   }
 
-  def int: BEInt = {
+  private def decodeInt: BEInt = {
     assert(current == BE.IntegerStart)
     val value = new StringBuilder()
     next
@@ -94,13 +94,13 @@ case class BEDecoder(content: String) {
     value.toInt
   }
 
-  def string: BEString = {
+  private def decodeString: BEString = {
     val length = stringLength
     val value = (for(i <- 0 until length) yield next).mkString("")
     BEString(value)
   }
 
-  def list: BEList = {
+  private def decodeList: BEList = {
     assert(current == BE.ListStart)
     val res = ListBuffer[BE]()
     while(next != BE.ValueEnd) {
@@ -110,12 +110,12 @@ case class BEDecoder(content: String) {
     BEList(res:_*)
   }
 
-  def dictionary: BEDictionary = {
+  private def decodeDictionary: BEDictionary = {
     assert(current == BE.DictionaryStart)
     val res = ListBuffer[(BEString, BE)]()
     next
     while (current != BE.ValueEnd) {
-      val key = string
+      val key = decodeString
       next
       val value = decode
       res += key -> value

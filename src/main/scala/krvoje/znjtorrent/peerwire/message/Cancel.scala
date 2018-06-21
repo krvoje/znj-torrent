@@ -11,9 +11,9 @@ case class Cancel(index: Index, begin: Index, end: Index) extends PeerwireMessag
   override val serialized: Array[Byte] =  Array.concat(
     LEN,
     Array(Cancel.ID),
-    index.ser,
-    begin.ser,
-    end.ser)
+    index.serialized,
+    begin.serialized,
+    end.serialized)
 }
 
 object Cancel extends Deser[Cancel] {
