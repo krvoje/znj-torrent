@@ -1,5 +1,6 @@
 package krvoje.znjtorrent.bencoding
 
+import akka.util.ByteString
 import org.specs2._
 
 class BEncodingTest extends mutable.Specification {
@@ -82,5 +83,7 @@ class BEncodingTest extends mutable.Specification {
   "Lists should be serialized correctly" >> {
     BEList(BEString("123"), BEInt(123)).encoded ==== "l3:123i123ee"
   }
+
+  implicit def strToByteString(string: String): ByteString = ByteString(string)
 
 }

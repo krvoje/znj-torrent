@@ -1,5 +1,6 @@
 package krvoje.znjtorrent.metainfo
 
+import akka.util.ByteString
 import krvoje.znjtorrent.bencoding._
 import org.joda.time.{DateTime, DateTimeZone}
 
@@ -32,7 +33,7 @@ case class File(
 
 object Metainfo {
 
-  def read(content: String): Metainfo = {
+  def read(content: ByteString): Metainfo = {
     val decoded = BEDecoder(content).decode.asInstanceOf[BEDictionary]
     require(decoded.isInstanceOf[BEDictionary], "The metainfo file needs to contain a single dictionary")
     read(decoded)
@@ -57,10 +58,10 @@ object Metainfo {
       name        = d.dict("name").asInstanceOf[BEString].value,
       files       = d.dict.get("files")
         .map( fs => fs.asInstanceOf[BEList].values.map(_.asInstanceOf[BEDictionary]))
-        .map( d => d.map( d=> File(
-          path    = d.dict("path").asInstanceOf[BEList].values.map(_.asInstanceOf[BEString].value).mkString(""),
-          length  = d.dict("length").asInstanceOf[BEInt].value,
-          md5sum  = d.dict.get("md5sum").map(_.asInstanceOf[BEString].value)
+        .map( fileDicts => fileDicts.map( fileDict=> File(
+          path    = fileDict.dict("path").asInstanceOf[BEList].values.map(_.asInstanceOf[BEString].value).mkString(""),
+          length  = fileDict.dict("length").asInstanceOf[BEInt].value,
+          md5sum  = fileDict.dict.get("md5sum").map(_.asInstanceOf[BEString].value)
         )))
         .getOrElse(
           Seq(File(

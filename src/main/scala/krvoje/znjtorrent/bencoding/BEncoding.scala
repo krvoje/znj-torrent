@@ -1,15 +1,17 @@
 package krvoje.znjtorrent.bencoding
 
+import akka.util.ByteString
+
 import scala.collection.mutable.ListBuffer
 
 
 trait BE {
-  val encoded: String
+  val encoded: ByteString
 }
 
 trait BEValue[T] extends BE {
   val value: T
-  val encoded: String
+  val encoded: ByteString
 }
 
 
@@ -22,21 +24,21 @@ object BE {
 }
 
 case class BEString(value: String) extends BEValue[String] {
-  val encoded = s"${value.length}${BE.StringDelimiter}${value}"
+  val encoded = ByteString(s"${value.length}${BE.StringDelimiter}${value}")
 }
 
 
 case class BEInt(value: Int) extends BEValue[Int] {
-  val encoded = s"i${value}e"
+  val encoded = ByteString(s"i${value}e")
 }
 
 case class BEList(values: BE*) extends BE {
-  val encoded = s"l${values.map(_.encoded).mkString("")}e"
+  val encoded = ByteString(s"l${values.map(_.encoded).mkString("")}e")
 }
 
 case class BEDictionary(values: (BEString, BE)*) extends BE {
-  val encoded =
-    s"d${values.map(bevalue => s"${bevalue._1.encoded}${bevalue._2.encoded}").mkString("")}e"
+  val encoded = ByteString(
+    s"d${values.map(bevalue => s"${bevalue._1.encoded}${bevalue._2.encoded}").mkString("")}e")
 
   val dict: Map[String, BE] = values.map(v => v._1.value -> v._2).toMap
 
@@ -47,15 +49,15 @@ case class BEDictionary(values: (BEString, BE)*) extends BE {
 }
 
 
-case class BEDecoder(content: String) {
+case class BEDecoder(content: ByteString) {
   var currentIndex: Int = 0
 
-  private def current: Char = content.charAt(currentIndex)
+  private def current: Char = content.apply(currentIndex).asInstanceOf[Char]
   private def numeric(char: Char): Boolean = char >= '0' && char <= '9'
 
   private def next(): Char = {
     currentIndex += 1
-    content.charAt(currentIndex)
+    content.apply(currentIndex).asInstanceOf[Char]
   }
 
   def decode: BE = {

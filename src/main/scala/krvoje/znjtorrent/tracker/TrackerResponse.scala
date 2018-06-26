@@ -2,6 +2,7 @@ package krvoje.znjtorrent.tracker
 
 import java.net.InetSocketAddress
 
+import akka.util.ByteString
 import krvoje.znjtorrent.bencoding._
 
 case class TrackerResponse(
@@ -10,7 +11,7 @@ case class TrackerResponse(
 )
 
 object TrackerResponse {
-  def decode(content: String): TrackerResponse = {
+  def decode(content: ByteString): TrackerResponse = {
     val decoded = BEDecoder(content).decode
     require(decoded.isInstanceOf[BEDictionary], "The tracker response must be a dictionary")
     val d = decoded.asInstanceOf[BEDictionary]
