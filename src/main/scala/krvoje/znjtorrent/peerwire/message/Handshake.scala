@@ -26,7 +26,7 @@ case class Handshake(
 object Handshake extends Deser[Handshake]{
   val ID = -1 // Ignore
   def deserialize(bytes: Array[Byte]): Handshake = {
-    //TODO: require(bytes.length == ser.length, "Invalid Handshake length")
+    // TODO: require(bytes.length == bytes.length, "Invalid Handshake length")
     Handshake(
       infoHash = SHA1(bytes(28) :: bytes(29) :: bytes(30) :: bytes(31) :: bytes(32) ::
         bytes(33) :: bytes(34) :: bytes(35) :: bytes(36) :: bytes(37) ::
