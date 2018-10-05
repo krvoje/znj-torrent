@@ -21,8 +21,8 @@ case class Info(
   name: String,
   files: Seq[File]
 ) {
-  val singleFileMode: Boolean = files.length == 0
-  val multipleFileMode: Boolean = !singleFileMode
+  val isSingleFileMode: Boolean = files.length == 0
+  val isMultipleFileMode: Boolean = !isSingleFileMode
 }
 
 case class File(

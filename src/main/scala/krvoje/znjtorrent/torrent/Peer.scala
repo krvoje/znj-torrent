@@ -1,4 +1,4 @@
-package krvoje.znjtorrent
+package krvoje.znjtorrent.torrent
 
 import java.net.InetSocketAddress
 
@@ -16,13 +16,13 @@ import scala.util.{Failure, Success, Try}
 /**
   * Handles a connection towards a peer
   */
-class Peer(remote: InetSocketAddress,
+class Peer(
+  remote: InetSocketAddress,
+  listener: ActorRef, // TODO: Has to be something that understands general torrent management msgs
   var isChoked: Boolean,
   var isInterested: Boolean,
   var amChoked: Boolean,
-  var amInterested: Boolean,
-
-  listener: ActorRef // TODO: Has to be something that understands general torrent management msgs
+  var amInterested: Boolean
 ) extends Actor {
 
   import Tcp._
@@ -36,7 +36,7 @@ class Peer(remote: InetSocketAddress,
   var handshake: Option[Handshake] = None
   var port: Option[Port] = None
   val hasPiece: mutable.HashMap[Index, Boolean] = mutable.HashMap.empty
-  val wantsPieces: mutable.Seq[Request] = mutable.Seq.empty
+  var wantsPieces: Seq[Request] = Seq.empty[Request]
 
   val ALIVE_TRESHOLD: Long = 2 * 60 * 1000 // Two minutes // TODO: Use duration
   var aliveCounter: Long = System.currentTimeMillis()
@@ -163,7 +163,7 @@ class Peer(remote: InetSocketAddress,
   }
 
   private def handle(msg: Request) = {
-    wantsPieces += msg
+    wantsPieces ++= Seq(msg)
   }
 
   private def handle(msg: Piece) = ???
