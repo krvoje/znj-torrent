@@ -12,7 +12,7 @@ case class TrackerResponse(
 
 object TrackerResponse {
   def decode(content: ByteString): TrackerResponse = {
-    val decoded = BEDecoder(content).decode
+    val decoded = BEDeserializer(content).decode
     require(decoded.isInstanceOf[BEDictionary], "The tracker response must be a dictionary")
     val d = decoded.asInstanceOf[BEDictionary]
     val trackerFailure = d.dict.get("failure reason").map(v => TrackerFailure(v.asInstanceOf[BEString].value))
@@ -33,7 +33,7 @@ object TrackerResponse {
     )
   }
 
-  private def peers(d: BE): Seq[TrackerPeer] = { // TODO: Test
+  private def peers(d: BEValue): Seq[TrackerPeer] = { // TODO: Test
     d match {
       case BEList(values @ _*) => values.map(_.asInstanceOf[BEDictionary]).map( d =>
         TrackerPeer(

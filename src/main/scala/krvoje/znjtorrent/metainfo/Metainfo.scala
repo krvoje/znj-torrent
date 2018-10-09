@@ -34,7 +34,7 @@ case class File(
 object Metainfo {
 
   def read(content: ByteString): Metainfo = {
-    val decoded = BEDecoder(content).decode.asInstanceOf[BEDictionary]
+    val decoded = BEDeserializer(content).decode.asInstanceOf[BEDictionary]
     require(decoded.isInstanceOf[BEDictionary], "The metainfo file needs to contain a single dictionary")
     read(decoded)
   }
@@ -42,14 +42,14 @@ object Metainfo {
   def read(d: BEDictionary): Metainfo = Metainfo(
     info          = info(d.dict("info")),
     announce      = d.dict("announce").asInstanceOf[BEString].value,
-    announceList  = d.dict.get("announce-list").map(_.asInstanceOf[BEList].values.map(_.asInstanceOf[BEList].values.map(_.asInstanceOf[BEString].value))),
+    announceList  = d.dict.get("announce-list").map(_.asInstanceOf[BEList].value.map(_.asInstanceOf[BEList].value.map(_.asInstanceOf[BEString].value))),
     creationDate  = d.dict.get("creation date").map(_.asInstanceOf[BEInt].value).map(i => new DateTime(i*1000L, DateTimeZone.UTC)),
     comment       = d.dict.get("comment").map(_.asInstanceOf[BEString].value),
     createdBy     = d.dict.get("created by").map(_.asInstanceOf[BEString].value),
     encoding      = d.dict.get("encoding").map(_.asInstanceOf[BEString].value)
   )
 
-  private def info(e: BE): Info = {
+  private def info(e: BEValue): Info = {
     val d = e.asInstanceOf[BEDictionary]
     Info(
       pieceLength = d.dict("piece length").asInstanceOf[BEInt].value,
@@ -57,9 +57,9 @@ object Metainfo {
       isPrivate   = d.dict.get("private").exists(_.asInstanceOf[BEInt].value == 1),
       name        = d.dict("name").asInstanceOf[BEString].value,
       files       = d.dict.get("files")
-        .map( fs => fs.asInstanceOf[BEList].values.map(_.asInstanceOf[BEDictionary]))
+        .map( fs => fs.asInstanceOf[BEList].value.map(_.asInstanceOf[BEDictionary]))
         .map( fileDicts => fileDicts.map( fileDict=> File(
-          path    = fileDict.dict("path").asInstanceOf[BEList].values.map(_.asInstanceOf[BEString].value).mkString(""),
+          path    = fileDict.dict("path").asInstanceOf[BEList].value.map(_.asInstanceOf[BEString].value).mkString(""),
           length  = fileDict.dict("length").asInstanceOf[BEInt].value,
           md5sum  = fileDict.dict.get("md5sum").map(_.asInstanceOf[BEString].value)
         )))

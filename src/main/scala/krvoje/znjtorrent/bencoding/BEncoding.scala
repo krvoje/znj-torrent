@@ -4,16 +4,21 @@ import akka.util.ByteString
 
 import scala.collection.mutable.ListBuffer
 
-
-trait BE {
-  val encoded: ByteString
-}
-
-trait BEValue[T] extends BE {
+trait BEValue {
+  type T
   val value: T
-  val encoded: ByteString
+  val serialized: ByteString
 }
 
+trait BEValueSerializer[T] {
+  def serialize(value: T): ByteString
+}
+object BEValueSerializer {
+  def apply[T](implicit enc: BEValueSerializer[T]): BEValueSerializer[T] = enc
+  def createSerializer[T](f: T => ByteString) = new BEValueSerializer[T] {
+    override def serialize(value: T): ByteString = f(value)
+  }
+}
 
 object BE {
   val StringDelimiter = ':'
@@ -23,44 +28,77 @@ object BE {
   val ValueEnd = 'e'
 }
 
-case class BEString(value: String) extends BEValue[String] {
-  val encoded = ByteString(s"${value.length}${BE.StringDelimiter}${value}")
+case class BEString(value: String) extends BEValue {
+  type T = String
+
+  private val valueByteString = ByteString(value) // Different lengths due to encoding
+  val serialized = ByteString(s"${valueByteString.toArray.length}${BE.StringDelimiter}").concat(valueByteString)
+}
+
+object BEString {
+  implicit val beStringSerializer = BEValueSerializer.createSerializer[String](value =>
+    ByteString(s"${value.length}${BE.StringDelimiter}${value}"))
 }
 
 
-case class BEInt(value: Int) extends BEValue[Int] {
-  val encoded = ByteString(s"i${value}e")
+case class BEInt(value: Int) extends BEValue {
+  type T = Int
+
+  val serialized = ByteString(s"i${value}e")
+}
+object BEInt {
+  implicit val beIntSerializer = BEValueSerializer.createSerializer[Int](value =>
+    ByteString(s"i${value}e"))
 }
 
-case class BEList(values: BE*) extends BE {
-  val encoded = ByteString(s"l${values.map(_.encoded).mkString("")}e")
+case class BEList(value: BEValue*) extends BEValue {
+  type T = Seq[BEValue]
+
+  val serialized = ByteString(s"l${value.map(_.serialized).mkString("")}e")
+}
+object BEList {
+  implicit def beListSerializer = {
+    BEValueSerializer.createSerializer[Seq[BEValue]]{
+      values => ByteString(s"l${values.map(_.serialized).mkString("")}e")
+    }
+  }
 }
 
-case class BEDictionary(values: (BEString, BE)*) extends BE {
-  val encoded = ByteString(
-    s"d${values.map(bevalue => s"${bevalue._1.encoded}${bevalue._2.encoded}").mkString("")}e")
+// TODO: Use a dict instead of Seq of tuples
+case class BEDictionary(value: (BEString, BEValue)*) extends BEValue {
+  type T = Seq[(BEString, BEValue)]
+  val serialized = ByteString(
+    s"d${value.map(bevalue => s"${bevalue._1.serialized}${bevalue._2.serialized}").mkString("")}e")
 
-  val dict: Map[String, BE] = values.map(v => v._1.value -> v._2).toMap
+  val dict: Map[String, BEValue] = value.map(v => v._1.value -> v._2).toMap
 
   def string(key: String): String = dict(key).asInstanceOf[BEString].value
   def stringOpt(key: String): Option[String] = dict.get(key).map(_.asInstanceOf[BEString].value)
   def int(key: String): Int = dict(key).asInstanceOf[BEInt].value
   def intOpt(key: String): Option[Int] = dict.get(key).map(_.asInstanceOf[BEInt].value)
 }
+object BEDictionary {
+  implicit def beDictionarySerializer = {
+    BEValueSerializer.createSerializer[Seq[(BEString, BEValue)]] {
+      values => ByteString(
+        s"d${values.map(bevalue => s"${bevalue._1.serialized}${bevalue._2.serialized}").mkString("")}e")
+    }
+  }
+}
 
 
-case class BEDecoder(content: ByteString) {
+case class BEDeserializer(content: ByteString) {
   var currentIndex: Int = 0
 
-  private def current: Char = content.apply(currentIndex).asInstanceOf[Char]
+  private def current: Char = content(currentIndex).toChar
   private def numeric(char: Char): Boolean = char >= '0' && char <= '9'
 
   private def next(): Char = {
     currentIndex += 1
-    content.apply(currentIndex).asInstanceOf[Char]
+    content(currentIndex).toChar
   }
 
-  def decode: BE = {
+  def decode: BEValue = {
     current match {
       case BE.IntegerStart => decodeInt
       case BE.ListStart => decodeList
@@ -99,12 +137,12 @@ case class BEDecoder(content: ByteString) {
   private def decodeString: BEString = {
     val length = stringLength
     val value = (for(i <- 0 until length) yield next).mkString("")
-    BEString(value)
+    BEString(new String(value.getBytes("UTF-8"), "UTF-8"))
   }
 
   private def decodeList: BEList = {
     assert(current == BE.ListStart)
-    val res = ListBuffer[BE]()
+    val res = ListBuffer[BEValue]()
     while(next != BE.ValueEnd) {
       res += decode
     }
@@ -114,7 +152,7 @@ case class BEDecoder(content: ByteString) {
 
   private def decodeDictionary: BEDictionary = {
     assert(current == BE.DictionaryStart)
-    val res = ListBuffer[(BEString, BE)]()
+    val res = ListBuffer[(BEString, BEValue)]()
     next
     while (current != BE.ValueEnd) {
       val key = decodeString
