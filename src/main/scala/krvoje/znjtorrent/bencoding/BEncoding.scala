@@ -136,8 +136,8 @@ case class BEDeserializer(content: ByteString) {
 
   private def decodeString: BEString = {
     val length = stringLength
-    val value = (for(i <- 0 until length) yield next).mkString("")
-    BEString(new String(value.getBytes("UTF-8"), "UTF-8"))
+    val value = (for(i <- 0 until length) yield next.toByte).toArray[Byte] // TODO: Awful, write prettier
+    BEString(new String(value, "UTF-8"))
   }
 
   private def decodeList: BEList = {
