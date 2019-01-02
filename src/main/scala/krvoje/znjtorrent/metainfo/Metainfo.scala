@@ -1,6 +1,5 @@
 package krvoje.znjtorrent.metainfo
 
-import akka.util.ByteString
 import krvoje.znjtorrent.bencoding._
 import org.joda.time.{DateTime, DateTimeZone}
 
@@ -33,7 +32,7 @@ case class File(
 
 object Metainfo {
 
-  def read(content: ByteString): Metainfo = {
+  def read(content: String): Metainfo = {
     val decoded = BEDeserializer(content).decode.asInstanceOf[BEDictionary]
     require(decoded.isInstanceOf[BEDictionary], "The metainfo file needs to contain a single dictionary")
     read(decoded)

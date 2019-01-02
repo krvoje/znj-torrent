@@ -1,6 +1,5 @@
 package krvoje.znjtorrent.metainfo
 
-import akka.util.ByteString
 import org.joda.time.{DateTime, DateTimeZone}
 import org.specs2._
 
@@ -9,8 +8,7 @@ import scala.io.Source
 class MetainfoParsingTest extends mutable.Specification {
 
   "Ubuntu torrent metainfo" >> {
-    val result = Metainfo.read(ByteString(Source.fromResource("ubuntu-12.04.4-server-amd64.iso.torrent").mkString))
-    println(result)
+    val result = Metainfo.read(Source.fromResource("ubuntu-12.04.4-server-amd64.iso.torrent").mkString)
     result ==== Metainfo(
       info = Info(pieceLength = 524288,
         pieces = "demo",
