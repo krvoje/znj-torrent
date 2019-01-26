@@ -6,19 +6,19 @@ import org.specs2._
 class BEncodingTest extends mutable.Specification {
 
   "Strings should be deserialised correctly" >> {
-    BEDeserializer(BEString("kuki tuki").serialized).decode ==== BEString("kuki tuki")
-    BEDeserializer(BEString("čmrljenje").serialized).decode ==== BEString("čmrljenje")
-    BEDeserializer(BEString("").serialized).decode ==== BEString("")
+    BEDeserializer(BEValueSerializer.serialize(BEString("kuki tuki"))).decode ==== BEString("kuki tuki")
+    BEDeserializer(BEValueSerializer.serialize(BEString("čmrljenje"))).decode ==== BEString("čmrljenje")
+    BEDeserializer(BEValueSerializer.serialize(BEString(""))).decode ==== BEString("")
   }
 
   "Ints should be deserialized correctly" >> {
-    BEDeserializer(BEInt(-123).serialized).decode ==== BEInt(-123)
-    BEDeserializer(BEInt(-12).serialized).decode ==== BEInt(-12)
-    BEDeserializer(BEInt(-1).serialized).decode ==== BEInt(-1)
-    BEDeserializer(BEInt(0).serialized).decode ==== BEInt(0)
-    BEDeserializer(BEInt(1).serialized).decode ==== BEInt(1)
-    BEDeserializer(BEInt(12).serialized).decode ==== BEInt(12)
-    BEDeserializer(BEInt(123).serialized).decode ==== BEInt(123)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(-123))).decode ==== BEInt(-123)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(-12))).decode ==== BEInt(-12)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(-1))).decode ==== BEInt(-1)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(0))).decode ==== BEInt(0)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(1))).decode ==== BEInt(1)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(12))).decode ==== BEInt(12)
+    BEDeserializer(BEValueSerializer.serialize(BEInt(123))).decode ==== BEInt(123)
 
     BEDeserializer("i-123e").decode ==== BEInt(-123)
     BEDeserializer("i-12e").decode ==== BEInt(-12)
@@ -38,9 +38,9 @@ class BEncodingTest extends mutable.Specification {
   }
 
   "Lists should be deserialized correctly" >> {
-    BEDeserializer(BEList().serialized).decode ==== BEList()
-    BEDeserializer(BEList(BEString("123"), BEString("")).serialized).decode ==== BEList(BEString("123"), BEString(""))
-    BEDeserializer(BEList(BEString("123"), BEInt(123)).serialized).decode ==== BEList(BEString("123"), BEInt(123))
+    BEDeserializer(BEValueSerializer.serialize(BEList())).decode ==== BEList()
+    BEDeserializer(BEValueSerializer.serialize(BEList(BEString("123"), BEString("")))).decode ==== BEList(BEString("123"), BEString(""))
+    BEDeserializer(BEValueSerializer.serialize(BEList(BEString("123"), BEInt(123)))).decode ==== BEList(BEString("123"), BEInt(123))
   }
 
   "Dictionaries should be deserialized correctly" >> {
@@ -63,25 +63,25 @@ class BEncodingTest extends mutable.Specification {
       BEString("Listetina") -> list
     )
 
-    BEDeserializer(dict.serialized).decode ==== dict
-    BEDeserializer(dictBig.serialized).decode ==== dictBig
-    BEDeserializer(dictBigger.serialized).decode ==== dictBigger
+    BEDeserializer(BEValueSerializer.serialize(dict)).decode ==== dict
+    BEDeserializer(BEValueSerializer.serialize(dictBig)).decode ==== dictBig
+    BEDeserializer(BEValueSerializer.serialize(dictBigger)).decode ==== dictBigger
   }
 
   "Strings should be serialized correctly" >> {
-    BEString("kuki tuki").serialized ==== "9:kuki tuki"
-    BEString("").serialized ==== "0:"
-    BEString("čmrljenje").serialized ==== "9:čmrljenje"
+    BEValueSerializer.serialize(BEString("kuki tuki")) ==== "9:kuki tuki"
+    BEValueSerializer.serialize(BEString("")) ==== "0:"
+    BEValueSerializer.serialize(BEString("čmrljenje")) ==== "9:čmrljenje"
   }
 
   "Ints should be serialized correctly" >> {
-    BEInt(123).serialized ==== "i123e"
-    BEInt(12).serialized ==== "i12e"
-    BEInt(0).serialized ==== "i0e"
+    BEValueSerializer.serialize(BEInt(123)) ==== "i123e"
+    BEValueSerializer.serialize(BEInt(12)) ==== "i12e"
+    BEValueSerializer.serialize(BEInt(0)) ==== "i0e"
   }
 
   "Lists should be serialized correctly" >> {
-    BEList(BEString("123"), BEInt(123)).serialized ==== "l3:123i123ee"
+    BEValueSerializer.serialize(BEList(BEString("123"), BEInt(123))) ==== "l3:123i123ee"
   }
 
   implicit def strToByteString(string: String): ByteString = ByteString(string)
