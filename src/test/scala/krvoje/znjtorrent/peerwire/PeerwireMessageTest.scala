@@ -9,21 +9,21 @@ import shapeless._
 class PeerwireMessageTest extends mutable.Specification {
 
   "Serialization roundtrip" >> {
-    rt(Handshake(SHA1("0123456789ABCDEFGHIJ"), PeerID("0123456789ABCDEFGHIJ")))
-    rt(Keepalive())
-    rt(Choke())
-    rt(Unchoke())
-    rt(Interested())
-    rt(NotInterested())
-    rt(Have(Index(10)))
-    rt(Bitfield(false, false, false))
-    rt(Request(10, 2, 11)) // TODO: Invalid
-    rt(Piece(10, 2, Array[Byte](1, 1))) // TODO: Invalid
-    rt(Cancel(10, 2, 11)) // TODO: Invalid
-    rt(Port(PortValue(9000)))
+    roundtrip(Handshake(SHA1("0123456789ABCDEFGHIJ"), PeerID("0123456789ABCDEFGHIJ")))
+    roundtrip(Keepalive())
+    roundtrip(Choke())
+    roundtrip(Unchoke())
+    roundtrip(Interested())
+    roundtrip(NotInterested())
+    roundtrip(Have(Index(10)))
+    roundtrip(Bitfield(false, false, false))
+    roundtrip(Request(10, 2, 11)) // TODO: Invalid
+    roundtrip(Piece(10, 2, Array[Byte](1, 1))) // TODO: Invalid
+    roundtrip(Cancel(10, 2, 11)) // TODO: Invalid
+    roundtrip(Port(PortValue(9000)))
   }
 
-  private def rt(msg: PeerwireMessage) = {
+  private def roundtrip(msg: PeerwireMessage) = {
     s"$msg" >> {
       "Serialize -> Deserialize" >> { PeerwireMessage.deserialize(msg.serialized) ==== padBools(msg) }
       "Ser - > Deser -> Ser" >> {PeerwireMessage.deserialize(msg.serialized).serialized ==== msg.serialized}

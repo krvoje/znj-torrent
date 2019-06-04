@@ -73,7 +73,7 @@ class Peer(
 
         case Success(peerwireMessage) =>
           peerwireMessage match {
-            case msg@Handshake(infoHash, peerID) =>  handle(msg, connection)
+            case msg@Handshake(_, _) =>  handle(msg, connection)
             case _ => log.warning(s"Expected a handshake, but got a $peerwireMessage. Ignoring")
           }
       }
@@ -106,18 +106,18 @@ class Peer(
 
         case Success(peerwireMessage) =>
           peerwireMessage match {
-            case msg@Handshake(infoHash, peerID) =>   log.warning(s"Handshake received $msg, but already shook hands.")
-            case msg@Keepalive() =>                   handle(msg)
-            case msg@Choke() =>                       handle(msg)
-            case msg@Unchoke() =>                     handle(msg)
-            case msg@Interested() =>                  handle(msg)
-            case msg@NotInterested() =>               handle(msg)
-            case msg@Have(index) =>                   handle(msg)
-            case msg@Bitfield(payload) =>             handle(msg)
-            case msg@Request(index, begin, end) =>    handle(msg)
-            case msg@Piece(index, begin, block) =>    handle(msg)
-            case msg@Cancel(index, begin, end) =>     handle(msg)
-            case msg@Port(port) =>                    handle(msg)
+            case msg@Handshake(_, _) =>   log.warning(s"Handshake received $msg, but already shook hands.")
+            case msg@Keepalive() =>       handle(msg)
+            case msg@Choke() =>           handle(msg)
+            case msg@Unchoke() =>         handle(msg)
+            case msg@Interested() =>      handle(msg)
+            case msg@NotInterested() =>   handle(msg)
+            case msg@Have(_) =>           handle(msg)
+            case msg@Bitfield(_) =>       handle(msg)
+            case msg@Request(_, _, _) =>  handle(msg)
+            case msg@Piece(_, _, _) =>    handle(msg)
+            case msg@Cancel(_, _, _) =>   handle(msg)
+            case msg@Port(_) =>           handle(msg)
             case _ => log.warning(s"Unknown PeerwireMessage $peerwireMessage")
           }
       }

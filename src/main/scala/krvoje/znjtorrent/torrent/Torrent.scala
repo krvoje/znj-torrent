@@ -14,5 +14,5 @@ class Torrent(
 
   var peers: Seq[Peer] = Seq.empty[Peer]
 
-  override def receive: Receive = ???
+  override def receive = ???
 }
