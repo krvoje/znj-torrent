@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019 Hrvoje Peradin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package krvoje.znjtorrent.bencoding
 
 import scala.collection.mutable.ListBuffer
@@ -25,10 +50,10 @@ case class BEDeserializer(content: String) {
   private def decodeInt: BEInt = {
     assert(current == BEValue.IntegerStart)
     val value = new StringBuilder()
-    next
+    next()
     while(current != BEValue.ValueEnd) {
       value.append(current)
-      next
+      next()
     }
     require(value.toString().matches("[+-]?[0-9]*"), s"ASCII values expected, instead got: '${value.toString()}'")
     if(value.head == '0' && value.size != 1) throw new InvalidBEInt(value.toString())
@@ -42,7 +67,7 @@ case class BEDeserializer(content: String) {
     while(current != BEValue.StringDelimiter) {
       value.append(current)
       if(!numeric(current)) throw new InvalidStringPrefix(current.toString)
-      next
+      next()
     }
 
     assert(current == BEValue.StringDelimiter)
@@ -67,13 +92,13 @@ case class BEDeserializer(content: String) {
   private def decodeDictionary: BEDictionary = {
     assert(current == BEValue.DictionaryStart)
     val res = ListBuffer[(BEString, BEValue)]()
-    next
+    next()
     while (current != BEValue.ValueEnd) {
       val key = decodeString
-      next
+      next()
       val value = decode
       res += key -> value
-      next
+      next()
     }
     assert(current == BEValue.ValueEnd)
     BEDictionary(res:_*)
