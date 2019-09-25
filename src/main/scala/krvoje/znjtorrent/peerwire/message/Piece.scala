@@ -41,7 +41,7 @@ case class Piece(index: Index, begin: Index, block: Array[Byte]) extends Peerwir
       case that@Piece(_,_,_) =>
         index == that.index &&
         begin == that.begin &&
-        block.deep == that.block.deep
+        block.sameElements(that.block)
       case _ => false
     }
   }
@@ -51,7 +51,7 @@ case class Piece(index: Index, begin: Index, block: Array[Byte]) extends Peerwir
 object Piece extends Deser[Piece] {
   override val ID: Byte = 7
   override def deserialize(bs: Array[Byte]): Piece = {
-    val blockLength = BigInt(bs.slice(0, 4)).intValue() - 9
+    val blockLength = BigInt(bs.slice(0, 4)).intValue - 9
     Piece(
       index = Index(bs.slice(5, 9)),
       begin = Index(bs.slice(9, 13)),

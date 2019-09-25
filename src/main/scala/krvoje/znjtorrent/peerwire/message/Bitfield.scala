@@ -60,7 +60,7 @@ case class Bitfield(payload: Array[Boolean]) extends PeerwireMessage {
     that match {
       case that@Bitfield(pl) =>
         println(s"${payload.toSeq} vs ${that.payload.toSeq}")
-        payload.deep == that.payload.deep
+        payload.sameElements(that.payload)
       case _ => false
     }
   }
@@ -74,7 +74,7 @@ object Bitfield extends Deser[Bitfield] {
 
   override def deserialize(bs: Array[Byte]): Bitfield = {
     val valueLen = BigInt(bs.slice(0,4))-1
-    Bitfield(toBools(bs.slice(5, 5 + valueLen.intValue())))
+    Bitfield(toBools(bs.slice(5, 5 + valueLen.intValue)))
   }
 
   private def toBools(bs: Array[Byte]): Array[Boolean] = {

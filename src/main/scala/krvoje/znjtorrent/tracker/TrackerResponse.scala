@@ -74,7 +74,7 @@ object TrackerResponse {
                 chunk(1).asInstanceOf[Int].toString,
                 chunk(2).asInstanceOf[Int].toString,
                 chunk(3).asInstanceOf[Int].toString).mkString(".")
-              val port: Int = BigInt(chunk.slice(4,6)).intValue()
+              val port: Int = BigInt(chunk.slice(4,6)).intValue
               TrackerPeer(
                 peerID = s"Peer-$host",
                 address = new InetSocketAddress(host, port)
@@ -82,7 +82,7 @@ object TrackerResponse {
             } else None
         }
       }.toSeq
-      case _ => throw new InvalidParam("Dictionary or string expected")
+      case _ => Seq.empty // Fail silently
     }
   }
 }

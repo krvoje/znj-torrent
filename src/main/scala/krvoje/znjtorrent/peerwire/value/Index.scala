@@ -48,6 +48,6 @@ object Index {
   implicit def fromInt(value: Int): Index = Index(value)
 
   def apply(bs: Array[Byte]): Index = {
-    this(BigInt(bs).intValue())
+    this(BigInt(bs).intValue)
   }
 }
