@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.9.9",
   "com.chuusai" %% "shapeless" % "2.3.3",
 
-  "com.typesafe.akka" %% "akka-actor" % "2.5.25",
+  "com.typesafe.akka" %% "akka-actor-typed" % "2.5.26",
   "com.typesafe.akka" %% "akka-http" % "10.1.10",
   "com.typesafe.akka" %% "akka-stream" % "2.5.25",
 
