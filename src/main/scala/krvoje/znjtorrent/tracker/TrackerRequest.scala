@@ -28,19 +28,21 @@ package krvoje.znjtorrent.tracker
 import java.net.URLEncoder
 
 case class TrackerRequest(
-  infoHash: String,
-  peerID: String,
-  port: Int,
-  uploaded: BigInt,
-  downloaded: BigInt,
-  left: BigInt,
-  compact: Boolean,
-  noPeerID: Boolean,
-  event: TrackerEvent,
-  ip: String,
-  numWant: Int,
-  key: String,
-  trackerID: String) {
+                           infoHash  : String,
+                           peerID    : String,
+                           port      : Int,
+                           uploaded  : BigInt,
+                           downloaded: BigInt,
+                           left      : BigInt,
+                           compact   : Boolean,
+                           noPeerID  : Boolean,
+                           event     : TrackerEvent,
+                           ip        : String,
+                           numWant   : Int,
+                           key       : String,
+                           trackerID : String) {
+
+  def uriString: String = URLEncoder.encode(requestParams.map(_._1).mkString("&"), "utf-8")
 
   def requestParams = Seq(
     ("info_hash" -> infoHash),
@@ -49,15 +51,13 @@ case class TrackerRequest(
     ("uploaded" -> uploaded.toString),
     ("downloaded" -> downloaded.toString),
     ("left" -> left.toString),
-    ("compact" -> (if(compact) "1" else "0")),
-    ("noPeerID" -> (if(noPeerID) "1" else "0")),
+    ("compact" -> (if (compact) "1" else "0")),
+    ("noPeerID" -> (if (noPeerID) "1" else "0")),
     ("event" -> event.value),
     ("ip" -> ip),
     ("numwant" -> numWant.toString),
     ("key" -> key),
     ("trackerid" -> trackerID))
-
-  def uriString: String = URLEncoder.encode(requestParams.map(_._1).mkString("&"), "utf-8")
 }
 
 

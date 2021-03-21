@@ -2,7 +2,7 @@ name := "znj-torrent"
 
 version := "1.0"
 
-scalaVersion := "2.13.1"
+scalaVersion := "2.13.3"
 
 // Read here for optional jars and dependencies
 libraryDependencies ++= Seq(

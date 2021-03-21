@@ -32,8 +32,8 @@ trait BEValue {
 
 object BEValue {
   val StringDelimiter = ':'
-  val IntegerStart = 'i'
-  val ListStart = 'l'
+  val IntegerStart    = 'i'
+  val ListStart       = 'l'
   val DictionaryStart = 'd'
-  val ValueEnd = 'e'
+  val ValueEnd        = 'e'
 }

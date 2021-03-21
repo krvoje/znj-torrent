@@ -45,10 +45,10 @@ class BEncodingTest extends mutable.Specification {
 
   "Dictionaries should be deserialized correctly" >> {
     val dict = BEDictionary(
-        BEString("") -> BEString(""),
-        BEString("Info") -> BEString("Nema info"),
-        BEString("Broj") -> BEInt(3),
-        BEString("Lista") -> BEList()
+      BEString("") -> BEString(""),
+      BEString("Info") -> BEString("Nema info"),
+      BEString("Broj") -> BEInt(3),
+      BEString("Lista") -> BEList()
     )
 
     val dictBig = BEDictionary(
@@ -58,7 +58,7 @@ class BEncodingTest extends mutable.Specification {
       BEString("Dict") -> dict
     )
 
-    val list = BEList(dict, dict)
+    val list       = BEList(dict, dict)
     val dictBigger = BEDictionary(
       BEString("Listetina") -> list
     )

@@ -30,7 +30,17 @@ import scala.collection.mutable.ListBuffer
 case class BEDeserializer(content: String) {
   var currentIndex: Int = 0
 
+  def decode: BEValue = {
+    current match {
+      case BEValue.IntegerStart    => decodeInt()
+      case BEValue.ListStart       => decodeList()
+      case BEValue.DictionaryStart => decodeDictionary()
+      case _                       => decodeString
+    }
+  }
+
   private def current: Char = content(currentIndex)
+
   private def numeric(char: Char): Boolean = char >= '0' && char <= '9'
 
   private def next(): Char = {
@@ -38,20 +48,11 @@ case class BEDeserializer(content: String) {
     content(currentIndex)
   }
 
-  def decode: BEValue = {
-    current match {
-      case BEValue.IntegerStart => decodeInt()
-      case BEValue.ListStart => decodeList()
-      case BEValue.DictionaryStart => decodeDictionary()
-      case _ => decodeString
-    }
-  }
-
   private def decodeInt(): BEInt = {
     assert(current == BEValue.IntegerStart)
     val value = new StringBuilder()
     next()
-    while(current != BEValue.ValueEnd) {
+    while (current != BEValue.ValueEnd) {
       value.append(current)
       next()
     }
@@ -64,7 +65,7 @@ case class BEDeserializer(content: String) {
   private def stringLength: Int = {
     val value = new StringBuilder()
 
-    while(current != BEValue.StringDelimiter) {
+    while (current != BEValue.StringDelimiter) {
       value.append(current)
       require(numeric(current), s"Invalid string prefix: ${current}")
       next()
@@ -76,17 +77,17 @@ case class BEDeserializer(content: String) {
 
   private def decodeString: BEString = {
     val length = stringLength
-    BEString((for(i <- 0 until length) yield next()).mkString)
+    BEString((for (i <- 0 until length) yield next()).mkString)
   }
 
   private def decodeList(): BEList = {
     assert(current == BEValue.ListStart)
     val res = ListBuffer[BEValue]()
-    while(next() != BEValue.ValueEnd) {
+    while (next() != BEValue.ValueEnd) {
       res += decode
     }
     assert(current == BEValue.ValueEnd)
-    BEList(res.toSeq:_*)
+    BEList(res.toSeq: _*)
   }
 
   private def decodeDictionary(): BEDictionary = {
@@ -101,6 +102,6 @@ case class BEDeserializer(content: String) {
       next()
     }
     assert(current == BEValue.ValueEnd)
-    BEDictionary(res.toSeq:_*)
+    BEDictionary(res.toSeq: _*)
   }
 }

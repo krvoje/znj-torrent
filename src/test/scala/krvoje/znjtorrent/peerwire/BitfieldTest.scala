@@ -9,25 +9,26 @@ class BitfieldTest extends mutable.Specification {
   var count = 0
 
   implicit def stringToBools(str: String): Array[Boolean] = {
-    (for(c <- str.toCharArray) yield {
-      if(c == '0') Some(false)
-      else if(c == '1') Some(true)
+    (for (c <- str.toCharArray) yield {
+      if (c == '0') Some(false)
+      else if (c == '1') Some(true)
       else None
     }).flatten
   }
 
   implicit def int2Byte(int: Int) = int.asInstanceOf[Byte]
+
   implicit def t(f: (String, Seq[Byte])): Fragment = {
-    val payload = f._1
+    val payload  = f._1
     val expected = f._2.toSeq
-    val actual = Bitfield(payload).value.toSeq
+    val actual   = Bitfield(payload).value.toSeq
     count += 1
     val title = s"$count. ${payload.grouped(8).mkString(" ")}: $actual vs $expected"
     title >> {
       actual ==== expected
     }
   }
-  
+
   t("0" -> Seq[Byte](0))
   t("00" -> Seq[Byte](0))
   t("000" -> Seq[Byte](0))

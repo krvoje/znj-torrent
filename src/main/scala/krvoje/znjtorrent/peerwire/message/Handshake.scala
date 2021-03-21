@@ -29,16 +29,15 @@ import krvoje.znjtorrent.peerwire.value.{PeerID, SHA1}
 import shapeless._
 
 case class Handshake(
-  infoHash: SHA1,
-  peerID: PeerID
-) extends PeerwireMessage {
-
-  val choked: Boolean = true
-  val interested: Boolean = false
+                      infoHash: SHA1,
+                      peerID  : PeerID
+                    ) extends PeerwireMessage {
 
   override val len: Int = PeerwireMessage.PSTR.length.toByte
-  private val pstrlen = PeerwireMessage.PSTR.length
+  private val pstrlen  = PeerwireMessage.PSTR.length
 
+  val choked    : Boolean = true
+  val interested: Boolean = false
   val serialized: Array[Byte] = Array.concat(
     Array[Byte](pstrlen.toByte),
     PeerwireMessage.PSTR.getBytes("UTF-8"),
@@ -49,7 +48,7 @@ case class Handshake(
 }
 
 //noinspection ScalaStyle
-object Handshake extends Deser[Handshake]{
+object Handshake extends Deser[Handshake] {
   val ID: Byte = -1 // Ignore
   def deserialize(bytes: Array[Byte]): Handshake = {
     // TODO: require(bytes.length == bytes.length, "Invalid Handshake length")

@@ -31,10 +31,13 @@ case class BEList(value: BEValue*) extends BEValue {
 
 object BEList {
   implicit val serializer: BEValueSerializer[BEList] = {
-    BEValueSerializer.createSerializer[BEList]{
-      beList => s"${BEValue.ListStart}${beList.value.map(
-        BEValueSerializer.serialize
-      ).mkString("")}${BEValue.ValueEnd}"
+    BEValueSerializer.createSerializer[BEList] {
+      beList =>
+        s"${BEValue.ListStart}${
+          beList.value.map(
+            BEValueSerializer.serialize
+          ).mkString("")
+        }${BEValue.ValueEnd}"
     }
   }
 }

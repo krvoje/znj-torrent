@@ -30,7 +30,7 @@ case class Keepalive() extends PeerwireMessage {
   val serialized: Array[Byte] = LEN
 }
 
-object Keepalive extends Deser[Keepalive]{
+object Keepalive extends Deser[Keepalive] {
   val ID: Byte = -1 // Ignore
   def deserialize(bs: Array[Byte]): Keepalive = {
     Keepalive()

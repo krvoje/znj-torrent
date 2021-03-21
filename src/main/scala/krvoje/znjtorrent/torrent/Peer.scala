@@ -25,8 +25,6 @@
 
 package krvoje.znjtorrent.torrent
 
-import java.net.InetSocketAddress
-
 import akka.actor.{Actor, ActorRef, Props}
 import akka.event.Logging
 import akka.io.{IO, Tcp}
@@ -34,21 +32,22 @@ import akka.util.ByteString
 import krvoje.znjtorrent.peerwire.message._
 import krvoje.znjtorrent.peerwire.value.Index
 
+import java.net.InetSocketAddress
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 
 /**
-  * Handles a connection towards a peer
-  */
+ * Handles a connection towards a peer
+ */
 class Peer(
-  remote: InetSocketAddress,
-  listener: ActorRef, // TODO: Has to be something that understands general torrent management msgs
-  var isChoked: Boolean,
-  var isInterested: Boolean,
-  var amChoked: Boolean,
-  var amInterested: Boolean
-) extends Actor {
+            remote          : InetSocketAddress,
+            listener        : ActorRef, // TODO: Has to be something that understands general torrent management msgs
+            var isChoked    : Boolean,
+            var isInterested: Boolean,
+            var amChoked    : Boolean,
+            var amInterested: Boolean
+          ) extends Actor {
 
   import Tcp._
   import context.system
@@ -57,14 +56,13 @@ class Peer(
 
   val manager = IO(Tcp)
   manager ! Connect(remote)
-
-  var handshake: Option[Handshake] = None
-  var port: Option[Port] = None
-  val hasPiece: mutable.HashMap[Index, Boolean] = mutable.HashMap.empty
-  var wantsPieces: Seq[Request] = Seq.empty[Request]
-
+  val hasPiece   : mutable.HashMap[Index, Boolean] = mutable.HashMap.empty
   val ALIVE_TRESHOLD: Long = 2 * 60 * 1000 // Two minutes // TODO: Use duration
-  var aliveCounter: Long = System.currentTimeMillis()
+  var handshake  : Option[Handshake]               = None
+  var port       : Option[Port]                    = None
+  var wantsPieces: Seq[Request]                    = Seq.empty[Request]
+  var aliveCounter  : Long = System.currentTimeMillis()
+
   def isAlive: Boolean = (System.currentTimeMillis() - aliveCounter) < ALIVE_TRESHOLD
 
   override def receive: PartialFunction[Any, Unit] = {
@@ -98,8 +96,8 @@ class Peer(
 
         case Success(peerwireMessage) =>
           peerwireMessage match {
-            case msg@Handshake(_, _) =>  handle(msg, connection)
-            case _ => log.warning(s"Expected a handshake, but got a $peerwireMessage. Ignoring")
+            case msg@Handshake(_, _) => handle(msg, connection)
+            case _                   => log.warning(s"Expected a handshake, but got a $peerwireMessage. Ignoring")
           }
       }
 
@@ -111,6 +109,11 @@ class Peer(
     case _: ConnectionClosed =>
       listener ! "Connection closed"
       context.stop(self)
+  }
+
+  private def handle(msg: Handshake, connection: ActorRef) = {
+    this.handshake = Some(msg)
+    context.become(shookHands(connection))
   }
 
   private def shookHands(connection: ActorRef): Receive = {
@@ -131,19 +134,19 @@ class Peer(
 
         case Success(peerwireMessage) =>
           peerwireMessage match {
-            case msg@Handshake(_, _) =>   log.warning(s"Handshake received $msg, but already shook hands.")
-            case msg@Keepalive() =>       handle(msg)
-            case msg@Choke() =>           handle(msg)
-            case msg@Unchoke() =>         handle(msg)
-            case msg@Interested() =>      handle(msg)
-            case msg@NotInterested() =>   handle(msg)
-            case msg@Have(_) =>           handle(msg)
-            case msg@Bitfield(_) =>       handle(msg)
-            case msg@Request(_, _, _) =>  handle(msg)
-            case msg@Piece(_, _, _) =>    handle(msg)
-            case msg@Cancel(_, _, _) =>   handle(msg)
-            case msg@Port(_) =>           handle(msg)
-            case _ => log.warning(s"Unknown PeerwireMessage $peerwireMessage")
+            case msg@Handshake(_, _)  => log.warning(s"Handshake received $msg, but already shook hands.")
+            case msg@Keepalive()      => handle(msg)
+            case msg@Choke()          => handle(msg)
+            case msg@Unchoke()        => handle(msg)
+            case msg@Interested()     => handle(msg)
+            case msg@NotInterested()  => handle(msg)
+            case msg@Have(_)          => handle(msg)
+            case msg@Bitfield(_)      => handle(msg)
+            case msg@Request(_, _, _) => handle(msg)
+            case msg@Piece(_, _, _)   => handle(msg)
+            case msg@Cancel(_, _, _)  => handle(msg)
+            case msg@Port(_)          => handle(msg)
+            case _                    => log.warning(s"Unknown PeerwireMessage $peerwireMessage")
           }
       }
 
@@ -156,11 +159,6 @@ class Peer(
     case _: ConnectionClosed =>
       listener ! "Connection closed"
       context.stop(self)
-  }
-
-  private def handle(msg: Handshake, connection: ActorRef) = {
-    this.handshake = Some(msg)
-    context.become(shookHands(connection))
   }
 
   private def handle(msg: Keepalive) = {

@@ -32,8 +32,8 @@ case class Cancel(index: Index, begin: Index, end: Index) extends PeerwireMessag
   require(index >= begin && index <= end, s"Invalid params: $this")
   require(begin <= end, s"Invalid params: $this")
 
-  override val len: Int = 13
-  override val serialized: Array[Byte] =  Array.concat(
+  override val len       : Int         = 13
+  override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Cancel.ID),
     index.serialized,
@@ -43,6 +43,7 @@ case class Cancel(index: Index, begin: Index, end: Index) extends PeerwireMessag
 
 object Cancel extends Deser[Cancel] {
   override val ID: Byte = 8
+
   override def deserialize(bs: Array[Byte]): Cancel = {
     Cancel(
       index = Index(bs.slice(5, 9)),

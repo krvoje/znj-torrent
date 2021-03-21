@@ -31,18 +31,19 @@ trait BEValueSerializer[T] {
 
 object BEValueSerializer {
   def apply[T](implicit enc: BEValueSerializer[T]): BEValueSerializer[T] = enc
+
   def createSerializer[T](f: T => String): BEValueSerializer[T] = (value: T) => f(value)
 
   def serialize(value: BEValue)(
     implicit
-    strS: BEValueSerializer[BEString],
-    intS: BEValueSerializer[BEInt],
+    strS : BEValueSerializer[BEString],
+    intS : BEValueSerializer[BEInt],
     listS: BEValueSerializer[BEList],
     dictS: BEValueSerializer[BEDictionary],
   ): String = value match {
-    case beString: BEString => strS.serialize(beString)
-    case beInt: BEInt => intS.serialize(beInt)
-    case beList: BEList => listS.serialize(beList)
+    case beString: BEString         => strS.serialize(beString)
+    case beInt: BEInt               => intS.serialize(beInt)
+    case beList: BEList             => listS.serialize(beList)
     case bEDictionary: BEDictionary => dictS.serialize(bEDictionary)
   }
 }

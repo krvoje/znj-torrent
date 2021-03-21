@@ -29,12 +29,12 @@ import akka.actor.{Actor, ActorRef}
 import krvoje.znjtorrent.metainfo.Metainfo
 
 /**
-  * Handles a single torrent
-  */
+ * Handles a single torrent
+ */
 class Torrent(
-  metainfo: Metainfo,
-  listener: ActorRef
-) extends Actor {
+               metainfo: Metainfo,
+               listener: ActorRef
+             ) extends Actor {
 
   var peers: Seq[Peer] = Seq.empty[Peer]
 

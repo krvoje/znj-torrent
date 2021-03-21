@@ -25,14 +25,18 @@ class PeerwireMessageTest extends mutable.Specification {
 
   private def roundtrip(msg: PeerwireMessage) = {
     s"$msg" >> {
-      "Serialize -> Deserialize" >> { PeerwireMessage.deserialize(msg.serialized) ==== padBools(msg) }
-      "Ser - > Deser -> Ser" >> {PeerwireMessage.deserialize(msg.serialized).serialized ==== msg.serialized}
+      "Serialize -> Deserialize" >> {
+        PeerwireMessage.deserialize(msg.serialized) ==== padBools(msg)
+      }
+      "Ser - > Deser -> Ser" >> {
+        PeerwireMessage.deserialize(msg.serialized).serialized ==== msg.serialized
+      }
     }
   }
 
   private def padBools(msg: PeerwireMessage): PeerwireMessage = msg match {
     case Bitfield(pl) => Bitfield(padBools(pl))
-    case _ => msg
+    case _            => msg
   }
 
   private def padBools(bs: Array[Boolean]): Array[Boolean] = {
