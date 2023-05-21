@@ -8,15 +8,13 @@ class BitfieldTest extends mutable.Specification {
 
   var count = 0
 
-  implicit def stringToBools(str: String): Array[Boolean] = {
-    (for (c <- str.toCharArray) yield {
-      if (c == '0') Some(false)
-      else if (c == '1') Some(true)
-      else None
-    }).flatten
+  implicit def stringToBools(str: String): Array[Boolean] = str.toCharArray.flatMap {
+    case '0' => Some(false)
+    case '1' => Some(true)
+    case _   => None
   }
 
-  implicit def int2Byte(int: Int) = int.asInstanceOf[Byte]
+  implicit def int2Byte(int: Int): Byte = int.asInstanceOf[Byte]
 
   implicit def t(f: (String, Seq[Byte])): Fragment = {
     val payload  = f._1

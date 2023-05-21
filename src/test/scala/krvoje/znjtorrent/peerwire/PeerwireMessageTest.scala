@@ -4,7 +4,6 @@ import krvoje.znjtorrent.Byte20
 import krvoje.znjtorrent.peerwire.message._
 import krvoje.znjtorrent.peerwire.value.{Index, PeerID, PortValue, SHA1}
 import org.specs2._
-import shapeless._
 
 class PeerwireMessageTest extends mutable.Specification {
 
@@ -46,7 +45,7 @@ class PeerwireMessageTest extends mutable.Specification {
 
   implicit def str2b20(str: String): Byte20 = {
     val bytes = str.getBytes("utf-8")
-    bytes(0) :: bytes(1) :: bytes(2) :: bytes(3) :: bytes(4) :: bytes(5) :: bytes(6) :: bytes(7) :: bytes(8) :: bytes(9) ::
-      bytes(10) :: bytes(11) :: bytes(12) :: bytes(13) :: bytes(14) :: bytes(15) :: bytes(16) :: bytes(17) :: bytes(18) :: bytes(19) :: HNil
+    (bytes(0), bytes(1), bytes(2), bytes(3), bytes(4), bytes(5), bytes(6), bytes(7), bytes(8), bytes(9),
+      bytes(10), bytes(11), bytes(12), bytes(13), bytes(14), bytes(15), bytes(16), bytes(17), bytes(18), bytes(19))
   }
 }

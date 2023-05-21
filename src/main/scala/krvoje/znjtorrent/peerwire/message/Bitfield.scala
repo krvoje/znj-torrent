@@ -29,8 +29,8 @@ import scala.collection.mutable.ArrayBuffer
 
 case class Bitfield(payload: Array[Boolean]) extends PeerwireMessage {
 
-  override lazy val len       : Int         = (1 + value.length)
-  override lazy val serialized: Array[Byte] = Array.concat(
+  override val len       : Int         = (1 + value.length)
+  override val serialized: Array[Byte] = Array.concat(
     LEN,
     Array(Bitfield.ID),
     value)
@@ -57,6 +57,8 @@ case class Bitfield(payload: Array[Boolean]) extends PeerwireMessage {
       case _                 => false
     }
   }
+
+  override def hashCode(): Int = payload.hashCode()
 
   private def pad(bs: Array[Boolean]): Array[Boolean] = {
     val leftToPad = if (bs.length % Bitfield.BYTE_SIZE != 0) (Bitfield.BYTE_SIZE - bs.length % Bitfield.BYTE_SIZE) else 0
