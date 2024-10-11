@@ -25,7 +25,7 @@
 
 package krvoje.znjtorrent.torrent
 
-import akka.actor.{Actor, ActorRef}
+import org.apache.pekko.actor.{Actor, ActorRef}
 import krvoje.znjtorrent.metainfo.Metainfo
 
 /**

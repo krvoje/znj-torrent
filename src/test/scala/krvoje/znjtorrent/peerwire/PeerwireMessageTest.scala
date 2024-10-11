@@ -3,11 +3,12 @@ package krvoje.znjtorrent.peerwire
 import krvoje.znjtorrent.Byte20
 import krvoje.znjtorrent.peerwire.message._
 import krvoje.znjtorrent.peerwire.value.{Index, PeerID, PortValue, SHA1}
-import org.specs2._
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class PeerwireMessageTest extends mutable.Specification {
+class PeerwireMessageTest extends AnyWordSpec with Matchers {
 
-  "Serialization roundtrip" >> {
+  "Serialization roundtrip" when {
     roundtrip(Handshake(SHA1("0123456789ABCDEFGHIJ"), PeerID("0123456789ABCDEFGHIJ")))
     roundtrip(Keepalive())
     roundtrip(Choke())
@@ -23,12 +24,12 @@ class PeerwireMessageTest extends mutable.Specification {
   }
 
   private def roundtrip(msg: PeerwireMessage) = {
-    s"$msg" >> {
-      "Serialize -> Deserialize" >> {
-        PeerwireMessage.deserialize(msg.serialized) ==== padBools(msg)
+    s"$msg" should {
+      "serialize and deserialize correctly" in {
+        PeerwireMessage.deserialize(msg.serialized) shouldEqual padBools(msg)
       }
-      "Ser - > Deser -> Ser" >> {
-        PeerwireMessage.deserialize(msg.serialized).serialized ==== msg.serialized
+      "serialize -> deserialize -> serialize correctly" in {
+        PeerwireMessage.deserialize(msg.serialized).serialized shouldEqual msg.serialized
       }
     }
   }

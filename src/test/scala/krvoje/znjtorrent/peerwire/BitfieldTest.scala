@@ -1,10 +1,10 @@
 package krvoje.znjtorrent.peerwire
 
 import krvoje.znjtorrent.peerwire.message.Bitfield
-import org.specs2._
-import org.specs2.specification.core.Fragment
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class BitfieldTest extends mutable.Specification {
+class BitfieldTest extends AnyFlatSpec with Matchers {
 
   var count = 0
 
@@ -16,39 +16,37 @@ class BitfieldTest extends mutable.Specification {
 
   implicit def int2Byte(int: Int): Byte = int.asInstanceOf[Byte]
 
-  implicit def t(f: (String, Seq[Byte])): Fragment = {
-    val payload  = f._1
-    val expected = f._2.toSeq
-    val actual   = Bitfield(payload).value.toSeq
+  def testBitfield(payload: String, expected: Seq[Byte]): Unit = {
+    val actual = Bitfield(payload).value.toSeq
     count += 1
     val title = s"$count. ${payload.grouped(8).mkString(" ")}: $actual vs $expected"
-    title >> {
-      actual ==== expected
+    it should title in {
+      actual shouldEqual expected
     }
   }
 
-  t("0" -> Seq[Byte](0))
-  t("00" -> Seq[Byte](0))
-  t("000" -> Seq[Byte](0))
-  t("00000000" -> Seq[Byte](0))
-  t("00000000 0" -> Seq[Byte](0, 0))
-  t("00000000 00" -> Seq[Byte](0, 0))
-  t("00000000 00000000" -> Seq[Byte](0, 0))
-  t("00000000 00000000 0" -> Seq[Byte](0, 0, 0))
+  testBitfield("0", Seq[Byte](0))
+  testBitfield("00", Seq[Byte](0))
+  testBitfield("000", Seq[Byte](0))
+  testBitfield("00000000", Seq[Byte](0))
+  testBitfield("00000000 0", Seq[Byte](0, 0))
+  testBitfield("00000000 00", Seq[Byte](0, 0))
+  testBitfield("00000000 00000000", Seq[Byte](0, 0))
+  testBitfield("00000000 00000000 0", Seq[Byte](0, 0, 0))
 
-  t("1" -> Seq[Byte](1 << 7))
-  t("01" -> Seq[Byte](1 << 6))
-  t("001" -> Seq[Byte](1 << 5))
-  t("00000001" -> Seq[Byte](1))
-  t("00000000 1" -> Seq[Byte](0, 1 << 7))
-  t("00000000 10" -> Seq[Byte](0, 1 << 7))
-  t("00000000 100" -> Seq[Byte](0, 1 << 7))
-  t("00000000 10000000" -> Seq[Byte](0, 1 << 7))
-  t("00000000 10000000 0" -> Seq[Byte](0, 1 << 7, 0))
-  t("00000000 01" -> Seq[Byte](0, 1 << 6))
-  t("00000000 00000001" -> Seq[Byte](0, 1))
-  t("00000000 00000000 1" -> Seq[Byte](0, 0, 1 << 7))
-  t("00000000 00000000 10" -> Seq[Byte](0, 0, 1 << 7))
-  t("00000000 00000000 100" -> Seq[Byte](0, 0, 1 << 7))
-  t("00000000 00000000 1001" -> Seq[Byte](0, 0, 1 << 7 | 1 << 4))
+  testBitfield("1", Seq[Byte](1 << 7))
+  testBitfield("01", Seq[Byte](1 << 6))
+  testBitfield("001", Seq[Byte](1 << 5))
+  testBitfield("00000001", Seq[Byte](1))
+  testBitfield("00000000 1", Seq[Byte](0, 1 << 7))
+  testBitfield("00000000 10", Seq[Byte](0, 1 << 7))
+  testBitfield("00000000 100", Seq[Byte](0, 1 << 7))
+  testBitfield("00000000 10000000", Seq[Byte](0, 1 << 7))
+  testBitfield("00000000 10000000 0", Seq[Byte](0, 1 << 7, 0))
+  testBitfield("00000000 01", Seq[Byte](0, 1 << 6))
+  testBitfield("00000000 00000001", Seq[Byte](0, 1))
+  testBitfield("00000000 00000000 1", Seq[Byte](0, 0, 1 << 7))
+  testBitfield("00000000 00000000 10", Seq[Byte](0, 0, 1 << 7))
+  testBitfield("00000000 00000000 100", Seq[Byte](0, 0, 1 << 7))
+  testBitfield("00000000 00000000 1001", Seq[Byte](0, 0, 1 << 7 | 1 << 4))
 }

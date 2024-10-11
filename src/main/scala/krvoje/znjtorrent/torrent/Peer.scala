@@ -25,12 +25,12 @@
 
 package krvoje.znjtorrent.torrent
 
-import akka.actor.{Actor, ActorRef, Props}
-import akka.event.Logging
-import akka.io.{IO, Tcp}
-import akka.util.ByteString
-import krvoje.znjtorrent.peerwire.message._
+import krvoje.znjtorrent.peerwire.message.*
 import krvoje.znjtorrent.peerwire.value.Index
+import org.apache.pekko.actor.{Actor, ActorRef, Props}
+import org.apache.pekko.event.Logging
+import org.apache.pekko.io.{IO, Tcp}
+import org.apache.pekko.util.ByteString
 
 import java.net.InetSocketAddress
 import scala.collection.mutable
@@ -49,7 +49,7 @@ class Peer(
             var amInterested: Boolean
           ) extends Actor {
 
-  import Tcp._
+  import Tcp.*
   import context.system
 
   val log = Logging(context.system, this)
